@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双向数据绑定原理</title>
+    <script src="./Observe.js"></script>
+    <script src="./Watcher.js"></script>
+</head>
+<body>
+    <h1 id="name">{{name}}</h1>
+    <script type="text/javascript">
+        class MVVM {
+            constructor(options,el,exp){
+                this.data = options.data;
+                this.el  = el 
+                this.exp = exp
+                this.init()
+            }
+            init(){
+                Object.keys(this.data).forEach(key=>{
+                    this.proxyKeys(key);  // 绑定代理属性
+                });
+                new Observer(this.data);
+                this.el.innerHTML = this.data[this.exp];  // 初始化模板数据的值
+                new Watcher(this,this.exp,(oldValue,newValue)=> {
+                    this.el.innerHTML = newValue
+                });
+            }
+            proxyKeys(key){
+                Object.defineProperty(this, key, {
+                    enumerable: false,
+                    configurable: true,
+                    get: function proxyGetter() {
+                        return this.data[key];
+                    },
+                    set: function proxySetter(newVal) {
+                        this.data[key] = newVal;
+                    }
+                });
+            }   
+        }
+        var el = document.querySelector('#name');
+        var mvvm = new MVVM({
+            data:{name: 'hello world'}
+        }, el, 'name');
+     
+        window.setTimeout(function () {
+            console.log('name值改变了');
+            mvvm.name = 'hi';
+        }, 2000);
+    </script>
+</body>
+</html>
