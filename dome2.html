@@ -9,21 +9,22 @@
 <body>
     <div id="app">
         <h2>{{title}}</h2>
-        <input v-model="name">
         <h1>{{name}}</h1>
+        <p v-text="name"></p>
+        <input v-model="name"></input>
         <button v-on:click='clickMe'>click me!</button>
     </div>
     <script src="./Dep.js"></script>
-    <script src="./Observe.js"></script>
     <script src="./Watcher.js"></script> 
     <script src="./Compile.js"></script>
+    <script src="./Observe.js"></script>
     <script src="./selfVue.js"></script>
     <script type="text/javascript">
         var selfVue = new SelfVue({
             el: '#app',
             data: {
                 title: 'hello world',
-                name: '',
+                name: '12',
             },
             methods: {
                 clickMe () {

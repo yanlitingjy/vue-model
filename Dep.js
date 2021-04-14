@@ -5,7 +5,7 @@ class Dep {
     }
     //添加进订阅器容器
     addSub(sub){
-        if (this.subs.indexOf(sub) < 0) {
+        if (sub && sub.update && this.subs.indexOf(sub) < 0) {
             this.subs.push(sub);
         }
     }

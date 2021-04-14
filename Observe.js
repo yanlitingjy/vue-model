@@ -1,22 +1,21 @@
 class Observer{
     constructor(data){
+        this._walk(data)
+    }
+    //对传入的数据进行劫持
+    _walk(data){
         //判断是否是对象，如果不是，则返回
         if(!data || typeof data !=='object'){
             return;
         }
-        this.data = data
-        this.walk()
-    }
-    //对传入的数据进行劫持
-    walk(){
-        for(let key in this.data){
-            this.defineReactive(this.data,key,this.data[key])
+        for(let key in data){
+            this.defineReactive(data,key,data[key])
         }
     }
     defineReactive(obj,key,value){
         // 创建当前属性的发布者
-        const dep = new Dep()
-        new Observer(value);
+        var that = this
+        var dep = new Dep()
         Object.defineProperty(obj,key,{
             configurable:true,
             enumerable:true,
@@ -32,7 +31,7 @@ class Observer{
                     return;
                 }
                 value = newValue
-                new Observer(value) //递归检测
+                that._walk(value)
                 dep.notify()
             }
         })

@@ -2,33 +2,27 @@
 class Watcher{
     /** 
      * vm
-     * keys
+     * key 
      * updateCb fn
     */
-    constructor(vm,keys,updateCb){
+    constructor(vm,key,updateCb){
         this.vm = vm
-        this.keys = keys
+        this.key = key
+
         this.updateCb = updateCb
-        this.value = null
-        this.get()
-    }
-    // 根据vm和keys获取到最新的观察值
-    get(){
+
+        //把watcher记录到到Dep🥱到静态属性
         Dep.target = this
-        const keys = this.keys.split('.')
-        let value = this.vm.data
-        keys.forEach(_key=>{
-            value = value[_key]
-        })
-        this.value = value
+        //触发get方法，在get方法中调用addSub
+        this.oldValue = vm[key]
+
         Dep.target = null;
-        return this.value
     }
     update() {
-        const oldValue = this.value;
-        const newValue = this.get();
-        if (oldValue !== newValue) {
-            this.updateCb(oldValue, newValue);
-        } 
+        let newValue = this.vm[this.key];
+        if(newValue === this.oldValue){
+            return
+        }
+        this.updateCb(newValue);
     }
 }

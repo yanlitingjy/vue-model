@@ -1,28 +1,34 @@
 class SelfVue {
     constructor(options){
-        this.options = options
-        this.data = options.data;
-        this.methods = options.methods;
-        this.init()
+        this.$options = options || {}
+        this.$data = options.data || {}
+        this.$el = typeof options.el == 'string'?document.querySelector(options.el):options.el
+        this.$methods = options.methods;
+        this.init(this.$data)
+    };
+    init(data){
+        this._proxyData(data)
+        new Observer(data);
+        new Compile(this);
+        this.$options.mounted.call(this); // 所有事情处理好后执行mounted函数
     }
-    init(){
-        Object.keys(this.data).forEach(key=>{
-            this.proxyKeys(key);  // 绑定代理属性
-        });
-        new Observer(this.data);
-        new Compile(this.options.el,this);
-        this.options.mounted.call(this); // 所有事情处理好后执行mounted函数
+    _proxyData(data){
+        //1.遍历data中的所有属性
+        Object.keys(data).forEach((key)=>{
+            //2.把data属性注入到vue实例中
+            Object.defineProperty(this,key,{
+                configurable:true,
+                enumerable:true,
+                get(){
+                    return data[key]
+                },
+                set(newValue){
+                    if(newValue == data[key]){
+                        return;
+                    }
+                    data[key] = newValue
+                }
+            })
+        })
     }
-    proxyKeys(key){
-        Object.defineProperty(this, key, {
-            enumerable: false,
-            configurable: true,
-            get: function proxyGetter() {
-                return this.data[key];
-            },
-            set: function proxySetter(newVal) {
-                this.data[key] = newVal;
-            }
-        });
-    }   
 }
